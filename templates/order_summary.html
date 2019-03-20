@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block script %}
+  {{ block.super }}
+  <script>
+    $(document).ready(function(){
+      var deleteLink = $('.link_ajax');
+      deleteLink.click(function(event){
+        event.preventDefault();
+        var thisAnchor = $(this);
+        var url_for_delete = thisAnchor.attr("href");
+
+
+        $.ajax({
+              url: url_for_delete,
+              success: function(data){
+              alert("Item Removed");
+              thisAnchor.closest('tr').remove();
+              $('.finalPrice').html(data['content']);
+              }
+        });
+      });
+    });
+  </script>
+{% endblock script %}
+
+
+
+{% block content %}
+
+ <section>
+   <div class="row">
+    <table class="table table-hover table-bordered text-center">
+      <tr class="text-center">
+        <th>no.</th>
+        <th>Item</th>
+        <th>Price</th>
+      </tr>
+      {% for item in order.get_cart_items %}
+
+        <tr class="row_to_remove" id="item{{ item.id }}">
+          <td>{{ forloop.counter }}</td>
+          <td>
+            {{ item.product.name }}
+            <span class="pull-right">
+              <a href="{% url 'delete_item' item.id %}" data-balloon="remove this item from cart" class="text-danger link_ajax">
+                <i class="fa fa-trash"></i>
+              </a>
+            </span>
+          </td>
+          <td class="price">{{ item.product.price }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan= 3> You have not added any items yet.</td>
+        </tr>
+      {% endfor %}
+      <tr>
+        {% if order.get_cart_total != None %}
+        <td colspan=2>
+          <strong class="pull-right">Order Total:</strong>
+        </td>
+
+        <td colspan= 1 class="finalPrice">
+          $<strong>{{ order.get_cart_total }}</strong>
+        </td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td colspan=1 >
+          <a href="{% url 'product-list' %}" class="btn btn-warning pull-left">
+            {% if order %}Continue Shopping{% else %}Add Items to Cart {% endif %}
+          </a>
+        </td>
+        <td colspan=2>
+          {% if order.get_cart_items %}
+            <a href="" class="pull-right btn btn-primary">Proceed To Checkout</a>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+
+   </div>
+ </section>
+{% endblock %}
+

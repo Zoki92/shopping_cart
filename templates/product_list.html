@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{{ message }}
+<div class="row">
+    {% for object in object_list %}
+    <div class="col-sm-3 m-5 border">
+        <p>{{ object.name }}</p>
+        <p>Price: ${{ object.price }}</p>
+        {% if object in user.profile.ebooks.all %}
+        <p>You own this</p>
+        {% elif object in current_order_products %}
+        <a href="{% url 'order_summary' %}" class="btn bnt-warning">Go to Cart</a>
+        {% else %}
+        <a href="{% url 'add_to_cart' object.id %}" class="btn btn-warning">Add to Cart</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}
